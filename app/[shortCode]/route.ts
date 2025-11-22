@@ -1,18 +1,12 @@
-export const runtime = "nodejs";
-
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { shortCode: string } }
+  context: { params: Promise<{ shortCode: string }> }
 ) {
   const { shortCode } = await context.params;
-
-  if (!shortCode) {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
 
   const url = await prisma.url.findUnique({
     where: { shortCode },
@@ -27,20 +21,20 @@ export async function GET(
   }
 
   if (url.password) {
-    const html = `
+    return new Response(
+      `
       <html>
         <body style="font-family:sans-serif;padding:40px;">
           <h3>This link is password protected</h3>
           <form method="POST">
-            <input type="password" name="password" placeholder="Enter password" required />
+            <input type="password" name="password" required />
             <button type="submit">Access</button>
           </form>
         </body>
       </html>
-    `;
-    return new Response(html, {
-      headers: { "Content-Type": "text/html" },
-    });
+      `,
+      { headers: { "Content-Type": "text/html" } }
+    );
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
@@ -65,12 +59,12 @@ export async function GET(
     }),
   ]);
 
-  return NextResponse.redirect(url.originalUrl, { status: 302 });
+  return NextResponse.redirect(url.originalUrl);
 }
 
 export async function POST(
   req: NextRequest,
-  context: { params: { shortCode: string } }
+  context: { params: Promise<{ shortCode: string }> }
 ) {
   const { shortCode } = await context.params;
 
@@ -84,12 +78,11 @@ export async function POST(
 
   const formData = await req.formData();
   const inputPassword = formData.get("password")?.toString() || "";
-
   const match = await bcrypt.compare(inputPassword, url.password);
 
   if (!match) {
     return new Response("Incorrect password", { status: 401 });
   }
 
-  return NextResponse.redirect(url.originalUrl, { status: 302 });
+  return NextResponse.redirect(url.originalUrl);
 }

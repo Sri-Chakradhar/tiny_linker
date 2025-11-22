@@ -7,7 +7,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
 
@@ -15,9 +15,11 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { id } = await params;
+
   const url = await prisma.url.findFirst({
     where: {
-      id: params.id,
+      id,
       userId: session.user.id,
     },
   });
@@ -31,7 +33,7 @@ export async function GET(
 
   const clicks = await prisma.click.groupBy({
     by: ["createdAt"],
-    where: { urlId: params.id },
+    where: { urlId: id },
     _count: { _all: true },
   });
 

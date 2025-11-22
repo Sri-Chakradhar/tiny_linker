@@ -7,8 +7,9 @@ import { authOptions } from "@/lib/auth";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user?.id) {
@@ -18,7 +19,7 @@ export async function DELETE(
   try {
     const url = await prisma.url.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
     });
@@ -32,7 +33,7 @@ export async function DELETE(
 
     await prisma.url.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
