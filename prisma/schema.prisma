@@ -10,8 +10,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
-
 
 model User {
   id        String   @id @default(cuid())
@@ -23,18 +23,6 @@ model User {
   urls      Url[]
 }
 
-model Url {
-  id          String   @id @default(cuid())
-  shortCode   String   @unique
-  originalUrl String
-  createdAt   DateTime @default(now())
-  clickCount  Int      @default(0)
-  lastClicked DateTime?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  clicks      Click[]
-}
-
 model Click {
   id        String   @id @default(cuid())
   url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
@@ -44,3 +32,18 @@ model Click {
   userAgent String?
   referrer  String?
 }
+
+model Url {
+  id          String   @id @default(cuid())
+  shortCode   String   @unique
+  originalUrl String
+  createdAt   DateTime @default(now())
+  clickCount  Int      @default(0)
+  lastClicked DateTime?
+  expiresAt   DateTime?
+  password    String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  clicks      Click[]
+}
+

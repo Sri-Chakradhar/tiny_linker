@@ -10,22 +10,28 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
+    "@prisma/client": "^4.16.2",
     "bcrypt": "^6.0.0",
+    "chart.js": "^4.5.1",
+    "framer-motion": "^12.23.24",
     "next": "16.0.3",
     "next-auth": "^4.24.13",
+    "prisma": "^4.16.2",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.0",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "@prisma/client": "^7.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
-    "@types/node": "^20",
+    "@types/estree": "^1.0.8",
+    "@types/json-schema": "^7.0.15",
+    "@types/node": "^20.19.25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
-    "prisma": "^7.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
